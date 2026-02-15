@@ -111,3 +111,21 @@ PUZZLE_REWARDS: dict = {
     'library': 'treasure_key',
     'secret_room': 'magic_compass',
 }
+
+ALTERNATIVE_ANSWERS: dict = {
+    '10': ['десять', 'ten'],
+    'эхо': ['echo'],
+}
+
+COMMANDS: dict = {
+    "go <direction>": "перейти в направлении (north/south/east/west)",
+    "look": "осмотреть текущую комнату",
+    "take <item>": "поднять предмет",
+    "use <item>": "использовать предмет из инвентаря",
+    "inventory": "показать инвентарь",
+    "solve": "попытаться решить загадку в комнате",
+    "quit": "выйти из игры",
+    "help": "показать список команд",
+}
+
+DIRECTIONS: tuple = ('north', 'south', 'east', 'west')

@@ -1,7 +1,20 @@
 #!/usr/bin/env python3
 """Вспомогательные функции игры."""
 
-from labyrinth_game.constants import PUZZLE_REWARDS, ROOMS
+import math
+
+from labyrinth_game.constants import (
+    ALTERNATIVE_ANSWERS,
+    PUZZLE_REWARDS,
+    ROOMS,
+)
+
+
+def pseudo_random(seed: int, modulo: int) -> int:
+    """Псевдослучайное число в диапазоне [0, modulo) на основе синуса."""
+    x = math.sin(seed * 12.9898) * 43758.5453
+    fractional = x - math.floor(x)
+    return math.floor(fractional * modulo)
 
 
 def describe_current_room(game_state: dict) -> None:
@@ -36,8 +49,13 @@ def solve_puzzle(game_state: dict) -> None:
     print(f"\n{question}")
 
     user_answer = get_input("Ваш ответ: ")
+    alternatives = ALTERNATIVE_ANSWERS.get(answer.lower(), [])
+    is_correct = (
+        user_answer.strip().lower() == answer.lower()
+        or user_answer.strip().lower() in alternatives
+    )
 
-    if user_answer.strip().lower() == answer.lower():
+    if is_correct:
         print("Верно! Загадка решена!")
         room['puzzle'] = None
 
@@ -47,6 +65,55 @@ def solve_puzzle(game_state: dict) -> None:
             print(f"Вы получили: {reward}")
     else:
         print("Неверно. Попробуйте снова.")
+        if room_name == 'trap_room':
+            trigger_trap(game_state)
+
+
+def trigger_trap(game_state: dict) -> None:
+    """Срабатывание ловушки с негативными последствиями."""
+    print("Ловушка активирована! Пол стал дрожать...")
+
+    inventory = game_state['player_inventory']
+    steps = game_state['steps_taken']
+
+    if inventory:
+        index = pseudo_random(steps, len(inventory))
+        lost_item = inventory.pop(index)
+        print(f"В суматохе вы потеряли: {lost_item}")
+    else:
+        damage = pseudo_random(steps, 10)
+        if damage < 3:
+            print("Ловушка оказалась смертельной! Вы проиграли.")
+            game_state['game_over'] = True
+        else:
+            print("Вам удалось увернуться! Повезло.")
+
+
+def random_event(game_state: dict) -> None:
+    """Случайное событие при перемещении между комнатами."""
+    steps = game_state['steps_taken']
+    room_name = game_state['current_room']
+
+    if pseudo_random(steps, 10) != 0:
+        return
+
+    event_type = pseudo_random(steps + 1, 3)
+
+    match event_type:
+        case 0:
+            print("\n* Вы заметили на полу блестящую монетку!")
+            ROOMS[room_name]['items'].append('coin')
+        case 1:
+            print("\n* Вы слышите шорох за стеной...")
+            if 'sword' in game_state['player_inventory']:
+                print("  Вы выхватили меч и отпугнули существо!")
+        case 2:
+            if (
+                room_name == 'trap_room'
+                and 'torch' not in game_state['player_inventory']
+            ):
+                print("\n* В темноте вы задели растяжку!")
+                trigger_trap(game_state)
 
 
 def attempt_open_treasure(game_state: dict) -> None:
@@ -75,7 +142,8 @@ def attempt_open_treasure(game_state: dict) -> None:
             print(question)
             code = get_input("Код: ")
 
-            if code.strip() == answer:
+            alternatives = ALTERNATIVE_ANSWERS.get(answer.lower(), [])
+            if code.strip() == answer or code.strip().lower() in alternatives:
                 print("Код верный! Сундук открывается!")
                 room['items'].remove('treasure_chest')
                 room['puzzle'] = None
@@ -89,14 +157,8 @@ def attempt_open_treasure(game_state: dict) -> None:
         print("Вы отступаете от сундука.")
 
 
-def show_help() -> None:
+def show_help(commands: dict) -> None:
     """Показывает список доступных команд."""
     print("\nДоступные команды:")
-    print("  go <direction>  - перейти в направлении (north/south/east/west)")
-    print("  look            - осмотреть текущую комнату")
-    print("  take <item>     - поднять предмет")
-    print("  use <item>      - использовать предмет из инвентаря")
-    print("  inventory       - показать инвентарь")
-    print("  solve           - попытаться решить загадку в комнате")
-    print("  quit            - выйти из игры")
-    print("  help            - показать это сообщение")
+    for cmd, desc in commands.items():
+        print(f"  {cmd:<16} - {desc}")
