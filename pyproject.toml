@@ -1,0 +1,36 @@
+[project]
+name = "project1-bakoev-faridun"
+version = "0.1.0"
+description = "Labyrinth of Treasures - text adventure game"
+authors = [
+    {name = "Faridun Bakoev"}
+]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+project = "labyrinth_game.main:main"
+
+[tool.poetry]
+packages = [
+    { include = "labyrinth_game" },
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "ruff (>=0.15.1,<0.16.0)"
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+exclude = ["venv", ".venv", "dist", "__pycache__"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = []
