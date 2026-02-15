@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Точка входа в игру Лабиринт сокровищ."""
 
+from labyrinth_game.constants import COMMANDS, DIRECTIONS
 from labyrinth_game.player_actions import (
     get_input,
     move_player,
@@ -33,6 +34,8 @@ def process_command(game_state: dict, command: str) -> None:
                 move_player(game_state, argument)
             else:
                 print("Укажите направление: north, south, east, west")
+        case _ if action in DIRECTIONS:
+            move_player(game_state, action)
         case 'look':
             describe_current_room(game_state)
         case 'take':
@@ -53,7 +56,7 @@ def process_command(game_state: dict, command: str) -> None:
             else:
                 solve_puzzle(game_state)
         case 'help':
-            show_help()
+            show_help(COMMANDS)
         case 'quit' | 'exit':
             print("Спасибо за игру! До встречи!")
             game_state['game_over'] = True

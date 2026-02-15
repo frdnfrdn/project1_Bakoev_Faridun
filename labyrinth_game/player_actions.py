@@ -15,7 +15,7 @@ def get_input(prompt: str = "> ") -> str:
 
 def move_player(game_state: dict, direction: str) -> None:
     """Перемещает игрока в указанном направлении."""
-    from labyrinth_game.utils import describe_current_room
+    from labyrinth_game.utils import describe_current_room, random_event
 
     room = ROOMS[game_state['current_room']]
 
@@ -23,9 +23,21 @@ def move_player(game_state: dict, direction: str) -> None:
         print("Нельзя пойти в этом направлении.")
         return
 
-    game_state['current_room'] = room['exits'][direction]
+    target_room = room['exits'][direction]
+
+    if target_room == 'treasure_room':
+        if 'rusty_key' not in game_state['player_inventory']:
+            print("Дверь заперта. Нужен ключ, чтобы пройти дальше.")
+            return
+        print(
+            "Вы используете найденный ключ, "
+            "чтобы открыть путь в комнату сокровищ."
+        )
+
+    game_state['current_room'] = target_room
     game_state['steps_taken'] += 1
     describe_current_room(game_state)
+    random_event(game_state)
 
 
 def take_item(game_state: dict, item_name: str) -> None:
