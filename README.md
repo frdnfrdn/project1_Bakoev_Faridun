@@ -58,8 +58,7 @@ make lint
 
 ## Демонстрация
 
-<!-- Вставьте ссылку на asciinema запись ниже -->
-<!-- [![asciicast](https://asciinema.org/a/XXXXXX.svg)](https://asciinema.org/a/XXXXXX) -->
+[![asciicast](https://asciinema.org/a/aMtSc7TYne39jzKD.svg)](https://asciinema.org/a/aMtSc7TYne39jzKD)
 
 ## Структура проекта
 
