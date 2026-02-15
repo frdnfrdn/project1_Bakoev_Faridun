@@ -129,3 +129,10 @@ COMMANDS: dict = {
 }
 
 DIRECTIONS: tuple = ('north', 'south', 'east', 'west')
+
+# Параметры случайных событий и ловушек
+EVENT_PROBABILITY: int = 10
+EVENT_TYPES_COUNT: int = 3
+TRAP_DAMAGE_RANGE: int = 10
+TRAP_DEATH_THRESHOLD: int = 3
+HELP_CMD_WIDTH: int = 16
