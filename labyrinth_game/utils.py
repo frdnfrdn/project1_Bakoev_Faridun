@@ -5,8 +5,13 @@ import math
 
 from labyrinth_game.constants import (
     ALTERNATIVE_ANSWERS,
+    EVENT_PROBABILITY,
+    EVENT_TYPES_COUNT,
+    HELP_CMD_WIDTH,
     PUZZLE_REWARDS,
     ROOMS,
+    TRAP_DAMAGE_RANGE,
+    TRAP_DEATH_THRESHOLD,
 )
 
 
@@ -81,8 +86,8 @@ def trigger_trap(game_state: dict) -> None:
         lost_item = inventory.pop(index)
         print(f"В суматохе вы потеряли: {lost_item}")
     else:
-        damage = pseudo_random(steps, 10)
-        if damage < 3:
+        damage = pseudo_random(steps, TRAP_DAMAGE_RANGE)
+        if damage < TRAP_DEATH_THRESHOLD:
             print("Ловушка оказалась смертельной! Вы проиграли.")
             game_state['game_over'] = True
         else:
@@ -94,10 +99,10 @@ def random_event(game_state: dict) -> None:
     steps = game_state['steps_taken']
     room_name = game_state['current_room']
 
-    if pseudo_random(steps, 10) != 0:
+    if pseudo_random(steps, EVENT_PROBABILITY) != 0:
         return
 
-    event_type = pseudo_random(steps + 1, 3)
+    event_type = pseudo_random(steps + 1, EVENT_TYPES_COUNT)
 
     match event_type:
         case 0:
@@ -161,4 +166,4 @@ def show_help(commands: dict) -> None:
     """Показывает список доступных команд."""
     print("\nДоступные команды:")
     for cmd, desc in commands.items():
-        print(f"  {cmd:<16} - {desc}")
+        print(f"  {cmd:<{HELP_CMD_WIDTH}} - {desc}")
